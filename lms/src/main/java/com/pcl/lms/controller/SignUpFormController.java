@@ -1,7 +1,9 @@
 package com.pcl.lms.controller;
 
 import com.pcl.lms.DB.Database;
+import com.pcl.lms.env.StaticResource;
 import com.pcl.lms.model.User;
+import com.pcl.lms.util.security.PasswordManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -22,6 +24,14 @@ public class SignUpFormController {
     public TextField txtAge;
     public TextField txtEmail;
     public PasswordField txtPassword;
+    public void initialize(){
+        setStaticData();
+    }
+
+    private void setStaticData() {
+        lblCompany.setText(StaticResource.getCompany());
+        lblVersion.setText(StaticResource.getVersion());
+    }
 
     public void alreadyHaveAnAccountOnAction(ActionEvent actionEvent) throws IOException {
         setUI("LoginForm");
@@ -31,7 +41,7 @@ public class SignUpFormController {
         String email=txtEmail.getText();
         String fullname=txtFullName.getText();
         int age= Integer.parseInt(txtAge.getText());
-        String password=txtPassword.getText();
+        String password=new PasswordManager().encode(txtPassword.getText());
 
         boolean emailExists= Database.userTable.stream().anyMatch(user -> user.getEmail().equals(email));
         if (emailExists){

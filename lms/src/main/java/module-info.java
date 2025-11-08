@@ -2,6 +2,7 @@ module com.pcl.lms.lms {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.graphics;
+    requires jbcrypt;
 
     // Allow FXML and JavaFX reflection access
     opens com.pcl.lms to javafx.fxml, javafx.graphics;
