@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane fx:id="context" prefHeight="403.0" prefWidth="427.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pcl.lms.controller.EmailVerificationFormController">
    <children>
       <Button layoutX="21.0" layoutY="21.0" mnemonicParsing="false" prefHeight="27.0" prefWidth="125.0" style="-fx-background-color: #6c5ce7;" text="&lt;- Back to Home" textFill="#f7f1f1">
@@ -21,7 +20,7 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <TextField layoutX="84.0" layoutY="163.0" prefHeight="37.0" prefWidth="241.0" promptText="Email" />
+      <TextField fx:id="txtEmail" layoutX="84.0" layoutY="163.0" prefHeight="37.0" prefWidth="241.0" promptText="Email" />
       <Button layoutX="159.0" layoutY="256.0" mnemonicParsing="false" onAction="#navigateVerifyCodeOnAction" style="-fx-background-color: #39ac73;" text="Send Code" textFill="#faf2f2">
          <font>
             <Font name="System Bold" size="14.0" />

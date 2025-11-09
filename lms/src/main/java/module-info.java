@@ -3,6 +3,9 @@ module com.pcl.lms.lms {
     requires javafx.fxml;
     requires javafx.graphics;
     requires jbcrypt;
+    requires jakarta.mail;
+    requires jakarta.activation;
+
 
     // Allow FXML and JavaFX reflection access
     opens com.pcl.lms to javafx.fxml, javafx.graphics;
