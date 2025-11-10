@@ -2,6 +2,7 @@ package com.pcl.lms.controller;
 
 import com.pcl.lms.DB.Database;
 import com.pcl.lms.model.User;
+import com.pcl.lms.util.security.PasswordManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -32,11 +33,11 @@ public class ResetPasswordFormController {
         Optional<User> selectedUser =Database.userTable.stream().filter(e->e.getEmail().equals(email)).findFirst();
         if (selectedUser.isPresent()){
             if (txtNewPassword.getText().trim().equals(txtConfirmPassword.getText().trim())){
-                selectedUser.get().setPassword(txtNewPassword.getText().trim());
+                selectedUser.get().setPassword(new PasswordManager().encode(txtNewPassword.getText().trim()));
                 new Alert(Alert.AlertType.INFORMATION,"Password reset successful").show();
                 setUI("LoginForm");
             }else {
-                new Alert(Alert.AlertType.ERROR,"Password doesn't match");
+                new Alert(Alert.AlertType.ERROR,"Password doesn't match").show();
             }
         }
 

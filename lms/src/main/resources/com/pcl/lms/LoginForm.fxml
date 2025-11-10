@@ -22,8 +22,8 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="txtEmail" layoutX="111.0" layoutY="157.0" prefHeight="26.0" prefWidth="278.0" promptText="Email" />
-      <PasswordField fx:id="txtPassword" layoutX="109.0" layoutY="212.0" prefHeight="26.0" prefWidth="278.0" promptText="Password" />
+      <TextField fx:id="txtEmail" layoutX="111.0" layoutY="157.0" prefHeight="26.0" prefWidth="278.0" promptText="Email" text="gmgee1175@gmail.com" />
+      <PasswordField fx:id="txtPassword" layoutX="109.0" layoutY="212.0" prefHeight="26.0" prefWidth="278.0" promptText="Password" text="1234" />
       <Button layoutX="187.0" layoutY="313.0" mnemonicParsing="false" onAction="#navigateDashboardOnAction" prefHeight="27.0" prefWidth="125.0" style="-fx-background-color: #00b894;" text="Login" textFill="#f7f1f1">
          <font>
             <Font name="System Bold" size="13.0" />
