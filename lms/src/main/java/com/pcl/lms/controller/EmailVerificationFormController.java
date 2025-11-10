@@ -26,6 +26,7 @@ public class EmailVerificationFormController {
     public Label lblCompany;
     public Label lblVersion;
     public TextField txtEmail;
+    private int generatedOTP;
 
     public void initialize(){
         setStaticData();
@@ -48,6 +49,10 @@ public class EmailVerificationFormController {
             final String toEmail=txtEmail.getText();
             Optional<User> selectedUser= Database.userTable.stream().filter(e->e.getEmail().equals(toEmail)).findFirst();
             if (selectedUser.isPresent()){
+                int otp=new VerificationCodeGenerator().getCode(4);
+                System.out.println("Generated OTP: "+otp);
+                this.generatedOTP=otp;
+
                 Properties props=new Properties();
                 props.put("mail.smtp.host","smtp.gmail.com");
                 props.put("mail.smtp.auth",true);
@@ -63,16 +68,24 @@ public class EmailVerificationFormController {
                 Message mimeMessage=new MimeMessage(session);
                 mimeMessage.setFrom(new InternetAddress(fromEmail));
                 mimeMessage.setRecipients(Message.RecipientType.TO,InternetAddress.parse(toEmail));
-                mimeMessage.setSubject("Verification code ");
-                mimeMessage.setText("Verification code is "+new VerificationCodeGenerator().getCode(4));
+                mimeMessage.setSubject("Email verification code ");
+                mimeMessage.setText("Your OTP code is "+new VerificationCodeGenerator().getCode(4));
+
                 Transport.send(mimeMessage);
+                System.out.println("OTP sent successfully to "+toEmail);
+
+                FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/pcl/lms/VerifyOTPForm.fxml"));
+                Parent parent=loader.load();
+                VerifyOTPFormController controller=loader.getController();
+                controller.setUserData(generatedOTP,toEmail);
+                Stage stage=(Stage) context.getScene().getWindow();
+                stage.setScene(new Scene(parent));
             }
         }catch (Exception e){
             throw new RuntimeException();
         }
 
 
-        setUI("VerifyOTPForm");
     }
     private void setUI(String location) throws IOException {
         /*URL resource=getClass().getResource("/com/pcl/lms/"+location+".fxml");
