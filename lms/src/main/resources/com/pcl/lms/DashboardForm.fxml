@@ -22,13 +22,13 @@
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Label>
-      <Button layoutX="524.0" layoutY="22.0" mnemonicParsing="false" style="-fx-background-color: black;" text="Logout" textFill="#fcf5f5">
+      <Button layoutX="524.0" layoutY="22.0" mnemonicParsing="false" onAction="#logoutOnAction" style="-fx-background-color: black;" text="Logout" textFill="#fcf5f5">
          <font>
             <Font name="System Bold" size="13.0" />
          </font>
       </Button>
       <Separator layoutY="67.0" prefHeight="6.0" prefWidth="600.0" />
-      <Button layoutX="33.0" layoutY="120.0" mnemonicParsing="false" prefHeight="86.0" prefWidth="110.0" style="-fx-background-color: #884dff;" text="Student" textFill="#f4eded">
+      <Button layoutX="33.0" layoutY="120.0" mnemonicParsing="false" onAction="#studentManageOnAction" prefHeight="86.0" prefWidth="110.0" style="-fx-background-color: #884dff;" text="Student" textFill="#f4eded">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>

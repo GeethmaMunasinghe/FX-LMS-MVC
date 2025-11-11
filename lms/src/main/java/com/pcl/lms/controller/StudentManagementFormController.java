@@ -1,0 +1,62 @@
+package com.pcl.lms.controller;
+
+import com.pcl.lms.DB.Database;
+import com.pcl.lms.model.Student;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.AnchorPane;
+
+import java.time.ZoneId;
+import java.util.Date;
+
+public class StudentManagementFormController {
+
+    public AnchorPane context;
+    public TextField txtStudentID;
+    public TextField txtStudentName;
+    public TextField txtAddress;
+    public DatePicker dteDOB;
+    public TextField txtSearch;
+    public Button btnSave;
+    public void initialize(){
+        setStudentId();
+    }
+
+    public void saveOnAction(ActionEvent actionEvent) {
+        Student student=new Student(
+                txtStudentID.getText(),
+                txtStudentName.getText(),
+                txtAddress.getText(),
+                Date.from(dteDOB.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
+        );
+        Database.studentTable.add(student);
+        System.out.println(student.toString());
+        setStudentId();
+        clearFields();
+        new Alert(Alert.AlertType.INFORMATION,"Student saved...").show();
+    }
+    private void setStudentId() {
+        if (!Database.studentTable.isEmpty()){
+            //id generate
+            Student lastStudent=Database.studentTable.get(Database.studentTable.size()-1);
+            String lastStudentId=lastStudent.getStudentId();
+            String[] splitData=lastStudentId.split("-");
+            String lastCharacter=splitData[1];
+            int lastDigit=Integer.parseInt(lastCharacter);
+            lastDigit++;
+            String generatedId="s-"+lastDigit;
+            txtStudentID.setText(generatedId);
+        }else {
+            txtStudentID.setText("s-1");
+        }
+    }
+    private void clearFields(){
+        txtStudentName.clear();
+        txtAddress.clear();
+        dteDOB.setValue(null);
+    }
+
+}
