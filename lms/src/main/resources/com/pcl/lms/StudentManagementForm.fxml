@@ -5,10 +5,11 @@
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
-
 
 <AnchorPane fx:id="context" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pcl.lms.controller.StudentManagementFormController">
    <children>
@@ -31,5 +32,14 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
+      <TableView fx:id="tblStudent" layoutX="14.0" layoutY="184.0" prefHeight="178.0" prefWidth="560.0">
+        <columns>
+          <TableColumn fx:id="colID" prefWidth="75.0" text="Id" />
+          <TableColumn fx:id="colName" prefWidth="147.20001220703125" text="Name" />
+            <TableColumn fx:id="colAddress" prefWidth="123.99998474121094" text="Address" />
+            <TableColumn fx:id="colDoB" prefWidth="96.800048828125" text="DOB" />
+            <TableColumn fx:id="colOption" prefWidth="118.39996337890625" text="Option" />
+        </columns>
+      </TableView>
    </children>
 </AnchorPane>

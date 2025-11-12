@@ -10,6 +10,7 @@ module com.pcl.lms.lms {
     // Allow FXML and JavaFX reflection access
     opens com.pcl.lms to javafx.fxml, javafx.graphics;
     opens com.pcl.lms.controller to javafx.fxml;
+    opens com.pcl.lms.tm to javafx.base;
 
     // Export your base package (main entry point)
     exports com.pcl.lms;
