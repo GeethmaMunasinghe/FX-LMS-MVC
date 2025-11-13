@@ -47,11 +47,15 @@ public class DashboardFormController {
     public void studentManageOnAction(ActionEvent actionEvent) throws IOException {
         setUI("StudentManagementForm");
     }
+    public void navigateTeacherFormOnAction(ActionEvent actionEvent) throws IOException {
+        setUI("TeacherManagementForm");
+    }
 
     private void setUI(String location) throws IOException {
         Stage stage=(Stage) context.getScene().getWindow();
         stage.setScene(new Scene((FXMLLoader.load(getClass().getResource("/com/pcl/lms/"+location+".fxml")))));
     }
+
 
 
 }
