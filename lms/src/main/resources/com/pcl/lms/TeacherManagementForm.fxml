@@ -44,8 +44,8 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <TextField fx:id="txtAddress" editable="false" layoutX="25.0" layoutY="136.0" prefHeight="26.0" prefWidth="166.0" promptText="Address" />
-      <TextField fx:id="txtSearch" editable="false" layoutX="218.0" layoutY="136.0" prefHeight="26.0" prefWidth="259.0" promptText="Search Here..." />
+      <TextField fx:id="txtAddress" layoutX="25.0" layoutY="136.0" prefHeight="26.0" prefWidth="166.0" promptText="Address" />
+      <TextField fx:id="txtSearch" layoutX="218.0" layoutY="136.0" prefHeight="26.0" prefWidth="259.0" promptText="Search Here..." />
       <Separator layoutY="78.0" prefHeight="3.0" prefWidth="600.0" />
       <TableView fx:id="tblTeacher" layoutX="21.0" layoutY="180.0" prefHeight="200.0" prefWidth="544.0">
         <columns>
