@@ -149,6 +149,7 @@ public class TeacherManagementFormController {
 
     public void newTeacherOnAction(ActionEvent actionEvent) {
         clearFields();
+        btnSave.setText("Save");
     }
 
     public void backToHomeOnAction(ActionEvent actionEvent) throws IOException {
