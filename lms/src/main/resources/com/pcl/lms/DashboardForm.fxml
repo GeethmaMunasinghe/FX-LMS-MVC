@@ -44,7 +44,7 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <Button layoutX="315.0" layoutY="120.0" mnemonicParsing="false" prefHeight="86.0" prefWidth="110.0" style="-fx-background-color: #ff8080;" text="Programs" textFill="#e7e2e2">
+      <Button layoutX="315.0" layoutY="120.0" mnemonicParsing="false" onAction="#navigateProgramFormOnAction" prefHeight="86.0" prefWidth="110.0" style="-fx-background-color: #ff8080;" text="Programs" textFill="#e7e2e2">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
