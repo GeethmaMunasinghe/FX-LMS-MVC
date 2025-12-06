@@ -125,8 +125,37 @@ public class ProgramManagementFormController {
     }
 
     public void saveOnAction(ActionEvent actionEvent) {
-
+        String[] selectedModules=new String[modList.size()];
+        int pointer=0;
+        for (Modules mod:modList){
+            selectedModules[pointer]=mod.getName();
+            pointer++;
+        }//save
+        if (btnSave.getText().equals("Save")){
+            Database.programmeTable.add(new Programme(
+                   txtProgramId.getText(),
+                    txtProgramName.getText(),
+                    Double.parseDouble(txtCost.getText()),
+                    cbxTeacher.getValue(),
+                    selectedModules
+            ));
+            setProgrammeId();
+            clearFields();
+            new Alert(Alert.AlertType.INFORMATION,"Programme saved").show();
+        }else {
+            //update
+        }
     }
+
+    private void clearFields() {
+        txtCost.clear();
+        txtProgramName.clear();
+        txtModules.clear();
+        modList.clear();
+        setModuleTableData();
+        cbxTeacher.setValue("Teachers");
+    }
+
     private void setUI(String location) throws IOException {
         Stage stage=(Stage) context.getScene().getWindow();
         stage.setScene(new Scene((FXMLLoader.load(getClass().getResource("/com/pcl/lms/"+location+".fxml")))));
