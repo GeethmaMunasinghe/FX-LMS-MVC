@@ -5,6 +5,7 @@ import com.pcl.lms.model.Modules;
 import com.pcl.lms.model.Programme;
 import com.pcl.lms.model.Teacher;
 import com.pcl.lms.tm.ModulesTM;
+import com.pcl.lms.tm.ProgrammeTm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -30,13 +31,13 @@ public class ProgramManagementFormController {
     public TableColumn<ModulesTM,String> colModuleName;
     public TableColumn<ModulesTM,Button> colModuleRemove;
     public Button btnSave;
-    public TableView tblProgram;
-    public TableColumn colProgramId;
-    public TableColumn colProgramName;
-    public TableColumn colTeacher;
-    public TableColumn colModuleList;
-    public TableColumn colCost;
-    public TableColumn colOption;
+    public TableView<ProgrammeTm> tblProgram;
+    public TableColumn<ProgrammeTm,String> colProgramId;
+    public TableColumn<ProgrammeTm,String> colProgramName;
+    public TableColumn<ProgrammeTm,String> colTeacher;
+    public TableColumn<ProgrammeTm,Button> colModuleList;
+    public TableColumn<ProgrammeTm,Double> colCost;
+    public TableColumn<ProgrammeTm,Button> colOption;
     public TextField txtSearch;
     public AnchorPane context;
 
@@ -45,8 +46,39 @@ public class ProgramManagementFormController {
         colModuleId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colModuleName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colModuleRemove.setCellValueFactory(new PropertyValueFactory<>("btn"));
+
+        //Define which one we need to use
+        colProgramId.setCellValueFactory(new PropertyValueFactory<>("programmeId"));
+        colProgramName.setCellValueFactory(new PropertyValueFactory<>("programmeName"));
+        colTeacher.setCellValueFactory(new PropertyValueFactory<>("teacher"));
+        colModuleList.setCellValueFactory(new PropertyValueFactory<>("btnModules"));
+        colCost.setCellValueFactory(new PropertyValueFactory<>("cost"));
+        colOption.setCellValueFactory(new PropertyValueFactory<>("btnDelete"));
+
+        setModuleTableData();
+        loadProgrammeData();
         setProgrammeId();
         setTeacher();
+    }
+
+    private void loadProgrammeData() {
+        //load the data into the table
+        ObservableList<ProgrammeTm> programsObList=FXCollections.observableArrayList();
+        for (Programme temp: Database.programmeTable){
+            Button btnModule=new Button("Module");
+            Button btnDelete=new Button("Delete");
+            programsObList.add(
+                    new ProgrammeTm(
+                            temp.getProgrammeId(),
+                            temp.getProgrammeName(),
+                            temp.getTeacher(),
+                            btnModule,
+                            temp.getCost(),
+                            btnDelete
+                    )
+            );
+        }
+        tblProgram.setItems(programsObList);
     }
 
     private void setTeacher() {
@@ -141,6 +173,7 @@ public class ProgramManagementFormController {
             ));
             setProgrammeId();
             clearFields();
+            loadProgrammeData();
             new Alert(Alert.AlertType.INFORMATION,"Programme saved").show();
         }else {
             //update
