@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane fx:id="context" prefHeight="308.0" prefWidth="231.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pcl.lms.controller.ModulePopUpController">
+   <children>
+      <Label layoutX="22.0" layoutY="23.0" prefHeight="26.0" prefWidth="102.0" text="Module List" textFill="#841212" underline="true">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <ListView fx:id="lstModule" layoutX="15.0" layoutY="69.0" prefHeight="209.0" prefWidth="200.0" />
+   </children>
+</AnchorPane>

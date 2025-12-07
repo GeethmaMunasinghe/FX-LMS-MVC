@@ -16,7 +16,10 @@ public class Database {
 
 
     static {
-        userTable.add(new User("Geethma Munasinghe","gmgee1175@gmail.com",24,new PasswordManager().encode("1234")));
+        userTable.add(new User("Geethma Munasinghe","gmgee1175@gmail.com",24,new PasswordManager()
+                .encode("1234")));
+        teacherTable.add(new Teacher("T-1","Vinu","0776543123","Matara"));
+        teacherTable.add(new Teacher("T-2","Mashi","0112345678","Colombo"));
     }
 
 }

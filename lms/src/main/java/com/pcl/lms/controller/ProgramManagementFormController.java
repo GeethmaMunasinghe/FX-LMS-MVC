@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class ProgramManagementFormController {
 
@@ -41,7 +42,9 @@ public class ProgramManagementFormController {
     public TextField txtSearch;
     public AnchorPane context;
 
-    static ArrayList<Modules> modList=new ArrayList<>();
+    ArrayList<Modules> modList=new ArrayList<>();
+    static ObservableList<ModulesTM> list=FXCollections.observableArrayList();
+
     public void initialize(){
         colModuleId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colModuleName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -54,11 +57,23 @@ public class ProgramManagementFormController {
         colModuleList.setCellValueFactory(new PropertyValueFactory<>("btnModules"));
         colCost.setCellValueFactory(new PropertyValueFactory<>("cost"));
         colOption.setCellValueFactory(new PropertyValueFactory<>("btnDelete"));
-
+        tblProgram.getSelectionModel().selectedItemProperty().addListener((observableValue,oldValue,newValue)->{
+            if (newValue!=null){
+                setData((ProgrammeTm)newValue);
+            }
+        });
         setModuleTableData();
         loadProgrammeData();
         setProgrammeId();
         setTeacher();
+    }
+
+    private void setData(ProgrammeTm tm) {
+        btnSave.setText("Update");
+        txtProgramId.setText(tm.getProgrammeId());
+        txtProgramName.setText(tm.getProgrammeName());
+        cbxTeacher.setValue(tm.getTeacher());
+        txtCost.setText(Double.toString(tm.getCost()));
     }
 
     private void loadProgrammeData() {
@@ -77,6 +92,26 @@ public class ProgramManagementFormController {
                             btnDelete
                     )
             );
+            btnDelete.setOnAction(event->{
+                Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Are you sure? ",ButtonType.YES,ButtonType.NO);
+                alert.showAndWait();
+                if (alert.getResult()==ButtonType.YES){
+                    Database.programmeTable.remove(temp);
+                    loadProgrammeData();
+                    setProgrammeId();
+                    new Alert(Alert.AlertType.INFORMATION,"Deleted successfully...").show();
+                }
+            });
+            btnModule.setOnAction(event->{
+                try{
+                    Stage stage=new Stage();
+                    stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("/com/pcl/lms/ModulePopUp.fxml"))));
+                    stage.show();
+                }catch (IOException e){
+                    throw new RuntimeException(e);
+                }
+
+            });
         }
         tblProgram.setItems(programsObList);
     }
@@ -119,8 +154,6 @@ public class ProgramManagementFormController {
     }
 
     private void setModuleTableData() {
-        ObservableList<ModulesTM> list=FXCollections.observableArrayList();
-
         for (Modules modules:modList){
             Button btn=new Button("Delete");
             list.add(new ModulesTM(
@@ -177,6 +210,18 @@ public class ProgramManagementFormController {
             new Alert(Alert.AlertType.INFORMATION,"Programme saved").show();
         }else {
             //update
+            Optional<Programme> selectedProgram =Database.programmeTable.stream().filter(e->e.getProgrammeId().
+                    equals(txtProgramId.getText())).findFirst();
+            if (selectedProgram.isPresent()){
+                selectedProgram.get().setProgrammeName(txtProgramName.getText());
+                selectedProgram.get().setCost(Double.parseDouble(txtCost.getText()));
+                selectedProgram.get().setTeacher(cbxTeacher.getValue());
+                selectedProgram.get().setModule(selectedModules);
+                new Alert(Alert.AlertType.INFORMATION,"Program updated..."+txtProgramId.getText()).show();
+                loadProgrammeData();
+                clearFields();
+                btnSave.setText("Save");
+            }
         }
     }
 
