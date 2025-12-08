@@ -52,7 +52,7 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <Button layoutX="456.0" layoutY="120.0" mnemonicParsing="false" prefHeight="86.0" prefWidth="110.0" style="-fx-background-color: #00ace6;" text="Intake" textFill="#efeaea">
+      <Button layoutX="456.0" layoutY="120.0" mnemonicParsing="false" onAction="#navigateIntakeFormOnAction" prefHeight="86.0" prefWidth="110.0" style="-fx-background-color: #00ace6;" text="Intake" textFill="#efeaea">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
@@ -60,7 +60,7 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <Button layoutX="33.0" layoutY="247.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="534.0" style="-fx-background-color: #ff3399;" text="Student Registration" textFill="#fcf9f9">
+      <Button layoutX="33.0" layoutY="247.0" mnemonicParsing="false" onAction="#navigateStudentRegOnAction" prefHeight="50.0" prefWidth="534.0" style="-fx-background-color: #ff3399;" text="Student Registration" textFill="#fcf9f9">
          <cursor>
             <Cursor fx:constant="HAND" />
          </cursor>
