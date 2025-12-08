@@ -3,12 +3,14 @@ package com.pcl.lms.controller;
 import com.pcl.lms.DB.Database;
 import com.pcl.lms.model.Intake;
 import com.pcl.lms.model.Programme;
+import com.pcl.lms.tm.IntakeTm;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -25,16 +27,42 @@ public class IntakeManagementFormController {
     public TextField txtName;
     public ComboBox<String> cbxProgram;
     public TextField txtSearch;
-    public TableView tblIntake;
-    public TableColumn colID;
-    public TableColumn colName;
-    public TableColumn colDate;
-    public TableColumn colProgram;
-    public TableColumn colOption;
+    public TableView<IntakeTm> tblIntake;
+    public TableColumn<IntakeTm,String> colID;
+    public TableColumn<IntakeTm,String> colName;
+    public TableColumn<IntakeTm,Date> colDate;
+    public TableColumn<IntakeTm,String> colProgram;
+    public TableColumn<IntakeTm,Button> colOption;
+    private String searchText="";
 
     public void initialize(){
+        colID.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+        colName.setCellValueFactory(new PropertyValueFactory<>("name"));
+        colProgram.setCellValueFactory(new PropertyValueFactory<>("program"));
+        colOption.setCellValueFactory(new PropertyValueFactory<>("btn"));
+
         setIntakeID();
         setProgramsData();
+        loadTableData(searchText);
+    }
+
+    private void loadTableData(String searchText) {
+        ObservableList<IntakeTm> intakeObList=FXCollections.observableArrayList();
+        intakeObList.clear();
+        for (Intake intake:Database.intakeTable){
+            if (intake.getName().contains(searchText)){
+                Button btn=new Button("Delete");
+                intakeObList.add(new IntakeTm(
+                      intake.getId(),
+                        intake.getDate(),
+                        intake.getName(),
+                        intake.getProgram(),
+                        btn
+                ));
+            }
+        }
+        tblIntake.setItems(intakeObList);
     }
 
     private void setProgramsData() {
@@ -77,6 +105,11 @@ public class IntakeManagementFormController {
             setIntakeID();
             setProgramsData();
             clearFields();
+            loadTableData(searchText);
+            txtSearch.textProperty().addListener((observable,oldValue,newValue)->{
+                this.searchText=newValue;
+                loadTableData(searchText);
+            });
         }
     }
 
