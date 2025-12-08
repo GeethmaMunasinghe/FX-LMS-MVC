@@ -1,5 +1,9 @@
 package com.pcl.lms.controller;
 
+import com.pcl.lms.DB.Database;
+import com.pcl.lms.model.Programme;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -14,12 +18,29 @@ public class RegistrationFormController {
     public AnchorPane context;
     public TextField txtId;
     public Button btnSave;
-    public ComboBox cmbProgram;
+    public ComboBox<String> cmbProgram;
     public RadioButton rbtnPaid;
     public ToggleGroup rbtnPayment;
     public ComboBox cmbStudent;
     public RadioButton rbtnUnpaid;
     public TextField txtSearch;
+
+    public void initialize(){
+        setProgramData();
+    }
+
+    private void setProgramData() {
+        ObservableList<String> programObList= FXCollections.observableArrayList();
+        programObList.clear();
+        if (!Database.programmeTable.isEmpty()){
+            for (Programme programme:Database.programmeTable){
+                programObList.add(programme.getProgrammeId()+"-"+programme.getProgrammeName());
+            }
+            cmbProgram.setItems(programObList);
+        }else {
+            cmbProgram.setValue("Programs not found!");
+        }
+    }
 
     public void newRegistrationOnAction(ActionEvent actionEvent) {
     }
