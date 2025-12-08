@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.Optional;
 
 public class IntakeManagementFormController {
 
@@ -45,6 +46,20 @@ public class IntakeManagementFormController {
         setIntakeID();
         setProgramsData();
         loadTableData(searchText);
+
+        tblIntake.getSelectionModel().selectedItemProperty().addListener((observable,oldValue,newValue)->{
+            if (newValue!=null){
+                setDataToForm((IntakeTm)newValue);
+            }
+        });
+    }
+
+    private void setDataToForm(IntakeTm tm) {
+        txtId.setText(tm.getId());
+        txtName.setText(tm.getName());
+        dteStart.setValue(tm.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        cbxProgram.setValue(tm.getProgram());
+        btnSave.setText("Update");
     }
 
     private void loadTableData(String searchText) {
@@ -119,7 +134,22 @@ public class IntakeManagementFormController {
                 this.searchText=newValue;
                 loadTableData(searchText);
             });
+        }else {
+            Optional<Intake> selectedIntake =Database.intakeTable.stream().filter(e->e.getId()
+                    .equals(txtId.getText())).findFirst();
+            if (selectedIntake.isPresent()){
+                selectedIntake.get().setName(txtName.getText());
+                selectedIntake.get().setDate(Date.from(dteStart.getValue()
+                        .atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                selectedIntake.get().setProgram(cbxProgram.getValue());
+                new Alert(Alert.AlertType.INFORMATION,"Update"+selectedIntake.get().getId()).show();
+                clearFields();
+                loadTableData(searchText);
+                setIntakeID();
+                btnSave.setText("Save");
+            }
         }
+
     }
 
     private void clearFields() {
