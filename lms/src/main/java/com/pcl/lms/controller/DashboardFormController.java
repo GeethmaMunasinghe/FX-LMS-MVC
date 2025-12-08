@@ -65,6 +65,7 @@ public class DashboardFormController {
         setUI("IntakeManagementForm");
     }
 
-    public void navigateStudentRegOnAction(ActionEvent actionEvent) {
+    public void navigateStudentRegOnAction(ActionEvent actionEvent) throws IOException {
+        setUI("RegistrationForm");
     }
 }
