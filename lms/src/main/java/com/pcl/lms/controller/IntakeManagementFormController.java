@@ -60,6 +60,15 @@ public class IntakeManagementFormController {
                         intake.getProgram(),
                         btn
                 ));
+                btn.setOnAction((event)->{
+                    Alert delAlert=new Alert(Alert.AlertType.CONFIRMATION,"Are you sure?",ButtonType.YES,ButtonType.NO);
+                    delAlert.showAndWait();
+                    if (delAlert.getResult()==ButtonType.YES){
+                        Database.intakeTable.remove(intake);
+                        loadTableData(searchText);
+                        setIntakeID();
+                    }
+                });
             }
         }
         tblIntake.setItems(intakeObList);
