@@ -5,7 +5,8 @@ module com.pcl.lms.lms {
     requires jbcrypt;
     requires jakarta.mail;
     requires jakarta.activation;
-
+    requires java.sql;
+    requires mysql.connector.j;
 
     // Allow FXML and JavaFX reflection access
     opens com.pcl.lms to javafx.fxml, javafx.graphics;

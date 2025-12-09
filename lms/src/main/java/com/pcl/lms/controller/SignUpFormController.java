@@ -14,7 +14,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
+
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 public class SignUpFormController {
     public AnchorPane context;
@@ -43,17 +48,29 @@ public class SignUpFormController {
         int age= Integer.parseInt(txtAge.getText());
         String password=new PasswordManager().encode(txtPassword.getText());
 
-        boolean emailExists= Database.userTable.stream().anyMatch(user -> user.getEmail().equals(email));
-        if (emailExists){
-            new Alert(Alert.AlertType.ERROR,"Email already exists").show();
-        }
         User user=new User(fullname,email,age,password);
-        Database.userTable.add(user);
-        System.out.println(user.toString());
+        try{
+            signup(user);
+            System.out.println(user.toString());
 
-        new Alert(Alert.AlertType.INFORMATION,"Account Created").show();
-        setUI("LoginForm");
+            new Alert(Alert.AlertType.INFORMATION,"Account Created").show();
+            setUI("LoginForm");
+        }catch (ClassNotFoundException|SQLException e){
+            e.printStackTrace();
+        }
+    }
+    private boolean signup(User user) throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/nextstackMvc","root","1234");
+        String sql="INSERT INTO user VALUES(?,?,?,?)"; //Blind parameters
 
+        PreparedStatement ps=connection.prepareStatement(sql);
+        ps.setString(1,user.getEmail());
+        ps.setString(2,user.getFullName());
+        ps.setInt(3,user.getAge());
+        ps.setString(4,user.getPassword());
+
+        return ps.executeUpdate()>0; //affected rows count
     }
     private void setUI(String location) throws IOException {
         Stage stage=(Stage) context.getScene().getWindow();

@@ -151,6 +151,7 @@ public class StudentManagementFormController {
         txtStudentName.clear();
         txtAddress.clear();
         dteDOB.setValue(null);
+        setTableData(searchText);
     }
 
     public void newStudentOnAction(ActionEvent actionEvent) {
