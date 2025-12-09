@@ -11,6 +11,7 @@ public class Database {
     public static ArrayList<Teacher> teacherTable=new ArrayList<>();
     public static ArrayList<Programme> programmeTable=new ArrayList<>();
     public static ArrayList<Intake> intakeTable=new ArrayList<>();
+    public static ArrayList<Enroll> enrollTable=new ArrayList<>();
 
     static {
         userTable.add(new User("Geethma Munasinghe","gmgee1175@gmail.com",24,new PasswordManager()

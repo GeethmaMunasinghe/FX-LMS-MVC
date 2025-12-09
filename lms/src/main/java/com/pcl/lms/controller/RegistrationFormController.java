@@ -1,6 +1,7 @@
 package com.pcl.lms.controller;
 
 import com.pcl.lms.DB.Database;
+import com.pcl.lms.model.Enroll;
 import com.pcl.lms.model.Programme;
 import com.pcl.lms.model.Student;
 import javafx.collections.FXCollections;
@@ -87,6 +88,12 @@ public class RegistrationFormController {
     }
 
     public void saveOnAction(ActionEvent actionEvent) {
+        Database.enrollTable.add(new Enroll(
+                cmbStudent.getValue(),
+                cmbProgram.getValue(),
+                rbtnPaid.isSelected()
+        ));
+        new Alert(Alert.AlertType.INFORMATION,"Success").show();
     }
     private void setUI(String location) throws IOException {
         Stage stage=(Stage) context.getScene().getWindow();
