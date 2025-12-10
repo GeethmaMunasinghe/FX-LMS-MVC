@@ -17,6 +17,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.*;
 import java.util.Optional;
 
 public class LoginFormController {
@@ -43,19 +44,40 @@ public class LoginFormController {
     public void navigateDashboardOnAction(ActionEvent actionEvent) throws IOException {
         String email=txtEmail.getText();
         String password=txtPassword.getText();
-        Optional<User>selectUser= Database.userTable.stream().filter(e->e.getEmail().equals(email)).findFirst();
-
-        if (selectUser.isPresent()){
-            if (new PasswordManager().check(password,selectUser.get().getPassword())){
-                new Alert(Alert.AlertType.INFORMATION,"Welcome...").show();
+        try {
+            boolean login=loginWithMysql(email,password);
+            if (login){
                 setUI("DashboardForm");
+                new Alert(Alert.AlertType.INFORMATION,"Welcome"+email).show();
             }else {
-                new Alert(Alert.AlertType.ERROR,"Incorrect Password !!!").show();
+                new Alert(Alert.AlertType.INFORMATION,"Something went wrong"+email).show();
+
             }
-        }else {
-            new Alert(Alert.AlertType.ERROR,"User not found...").show();
+
+        }catch (ClassNotFoundException|SQLException e){
+            e.printStackTrace();
         }
 
+
+    }
+
+    private boolean loginWithMysql(String email, String password) throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        Connection connection=DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/nextstackMvc","root","1234");
+        String sql="SELECT email,password FROM user WHERE email=?";
+        PreparedStatement ps=connection.prepareStatement(sql);
+        ps.setString(1,email);
+        ResultSet set=ps.executeQuery();
+        if (set.next()){
+            if (new PasswordManager().check(password,set.getString("password"))){
+                return true;
+            }else {
+                return false;
+            }
+        }else {
+            return false;
+        }
     }
 
     public void backToHomeOnAction(ActionEvent actionEvent) throws IOException {
