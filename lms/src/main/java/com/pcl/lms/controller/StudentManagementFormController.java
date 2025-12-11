@@ -113,31 +113,49 @@ public class StudentManagementFormController {
                 txtAddress.getText(),
                 Date.from(dteDOB.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
         );
-        if (btnSave.getText().equals("Save")){
-            Database.studentTable.add(student);
-            System.out.println(student.toString());
-            setStudentId();
-            clearFields();
-            new Alert(Alert.AlertType.INFORMATION,"Student saved...").show();
-            setTableData(searchText);
-        }else {
-            Optional<Student> selectedStudent=Database.studentTable.stream().filter(e->e.getStudentId().
-                    equals(txtStudentID.getText())).findFirst();
-            if (selectedStudent.isPresent()){
-                selectedStudent.get().setStudentName(txtStudentName.getText());
-                selectedStudent.get().setStudentAddress(txtAddress.getText());
-                selectedStudent.get().setDob(Date.from(dteDOB.getValue().atStartOfDay(ZoneId.systemDefault()).
-                        toInstant()));
-                new Alert(Alert.AlertType.INFORMATION,"Student updated").show();
-                setStudentId();
-                clearFields();
-                setTableData(searchText);
-                btnSave.setText("Save");
+        try {
+            if (btnSave.getText().equals("Save")){
+                boolean isSaved=saveStudent(student,userEmail);
+                if (isSaved){
+                    setStudentId();
+                    clearFields();
+                    new Alert(Alert.AlertType.INFORMATION,"Student saved...").show();
+                    setTableData(searchText);
+                }
+            }else {
+                Optional<Student> selectedStudent=Database.studentTable.stream().filter(e->e.getStudentId().
+                        equals(txtStudentID.getText())).findFirst();
+                if (selectedStudent.isPresent()){
+                    selectedStudent.get().setStudentName(txtStudentName.getText());
+                    selectedStudent.get().setStudentAddress(txtAddress.getText());
+                    selectedStudent.get().setDob(Date.from(dteDOB.getValue().atStartOfDay(ZoneId.systemDefault()).
+                            toInstant()));
+                    new Alert(Alert.AlertType.INFORMATION,"Student updated").show();
+                    setStudentId();
+                    clearFields();
+                    setTableData(searchText);
+                    btnSave.setText("Save");
+                }
             }
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
         }
 
 
+
     }
+
+    private boolean saveStudent(Student student, String userEmail) throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("INSERT INTO student VALUES (?,?,?,?,?)");
+        ps.setString(1,student.getStudentId());
+        ps.setString(2,student.getStudentName());
+        ps.setString(3,student.getStudentAddress());
+        ps.setObject(4,student.getDob());
+        ps.setString(5,userEmail);
+        return ps.executeUpdate()>0;
+    }
+
     private void setStudentId() {
         try {
             String lastStudentId=getLastStudent();
