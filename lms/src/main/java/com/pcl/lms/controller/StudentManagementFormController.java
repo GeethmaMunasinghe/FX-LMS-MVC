@@ -1,6 +1,7 @@
 package com.pcl.lms.controller;
 
 import com.pcl.lms.DB.Database;
+import com.pcl.lms.DB.DbConnection;
 import com.pcl.lms.model.Student;
 import com.pcl.lms.tm.StudentTM;
 import javafx.collections.FXCollections;
@@ -14,6 +15,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -36,6 +41,7 @@ public class StudentManagementFormController {
     public TableColumn<StudentTM,Date> colDoB;
     public TableColumn<StudentTM,Button> colOption;
     String searchText="";
+    String userEmail;
 
     public void initialize(){
         colID.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -133,20 +139,37 @@ public class StudentManagementFormController {
 
     }
     private void setStudentId() {
-        if (!Database.studentTable.isEmpty()){
-            //id generate
-            Student lastStudent=Database.studentTable.get(Database.studentTable.size()-1);
-            String lastStudentId=lastStudent.getStudentId();
-            String[] splitData=lastStudentId.split("-");
-            String lastCharacter=splitData[1];
-            int lastDigit=Integer.parseInt(lastCharacter);
-            lastDigit++;
-            String generatedId="s-"+lastDigit;
-            txtStudentID.setText(generatedId);
-        }else {
-            txtStudentID.setText("s-1");
+        try {
+            String lastStudentId=getLastStudent();
+                //id generate
+            if (lastStudentId!=null){
+                String[] splittedId=lastStudentId.split("-");
+                String lastCharAsString=splittedId[1];
+                int lastDigit=Integer.parseInt(lastCharAsString);
+                lastDigit++;
+                String generatedId="S-"+lastDigit;
+                txtStudentID.setText(generatedId);
+            }else {
+                txtStudentID.setText("S-1");
+            }
+
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
         }
+
     }
+
+    private String getLastStudent() throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement statement =connection.prepareStatement(
+                "SELECT id FROM student ORDER BY CAST(SUBSTRING(id,3)AS UNSIGNED)DESC LIMIT 1");
+        ResultSet set=statement.executeQuery();
+        if (set.next()){
+            return set.getString(1);
+        }
+        return null;
+    }
+
     private void clearFields(){
         txtStudentName.clear();
         txtAddress.clear();
@@ -164,5 +187,8 @@ public class StudentManagementFormController {
     private void setUI(String location) throws IOException {
         Stage stage=(Stage) context.getScene().getWindow();
         stage.setScene(new Scene((FXMLLoader.load(getClass().getResource("/com/pcl/lms/"+location+".fxml")))));
+    }
+    public void setUserEmail(String userEmail){
+        this.userEmail=userEmail;
     }
 }

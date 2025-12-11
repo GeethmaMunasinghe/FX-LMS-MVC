@@ -1,6 +1,7 @@
 package com.pcl.lms.controller;
 
 import com.pcl.lms.DB.Database;
+import com.pcl.lms.DB.DbConnection;
 import com.pcl.lms.env.StaticResource;
 import com.pcl.lms.model.User;
 import com.pcl.lms.util.security.PasswordManager;
@@ -47,7 +48,13 @@ public class LoginFormController {
         try {
             boolean login=loginWithMysql(email,password);
             if (login){
-                setUI("DashboardForm");
+                FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/pcl/lms/DashboardForm.fxml"));
+                Parent load=loader.load();
+                DashboardFormController dashboardController=loader.getController();
+                dashboardController.setData(email);
+                Stage stage=(Stage) context.getScene().getWindow();
+                stage.setScene(new Scene(load));
+
                 new Alert(Alert.AlertType.INFORMATION,"Welcome"+email).show();
             }else {
                 new Alert(Alert.AlertType.INFORMATION,"Something went wrong"+email).show();
@@ -62,9 +69,7 @@ public class LoginFormController {
     }
 
     private boolean loginWithMysql(String email, String password) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection=DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/nextstackMvc","root","1234");
+        Connection connection=DbConnection.getInstance().getConnection();
         String sql="SELECT email,password FROM user WHERE email=?";
         PreparedStatement ps=connection.prepareStatement(sql);
         ps.setString(1,email);

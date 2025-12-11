@@ -5,6 +5,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
@@ -21,6 +22,7 @@ public class DashboardFormController {
     public Label lblVersion;
     public Label lblDate;
     public Label lblTime;
+    String userEmail;
     public void initialize(){
         setData();
     }
@@ -45,7 +47,12 @@ public class DashboardFormController {
         setUI("LoginForm");
     }
     public void studentManageOnAction(ActionEvent actionEvent) throws IOException {
-        setUI("StudentManagementForm");
+        FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/pcl/lms/StudentManagementForm.fxml"));
+        Parent parent=loader.load();
+        StudentManagementFormController controller=loader.getController();
+        controller.setUserEmail(userEmail);
+        Stage stage=(Stage)context.getScene().getWindow();
+        stage.setScene(new Scene(parent));
     }
     public void navigateTeacherFormOnAction(ActionEvent actionEvent) throws IOException {
         setUI("TeacherManagementForm");
@@ -67,5 +74,8 @@ public class DashboardFormController {
 
     public void navigateStudentRegOnAction(ActionEvent actionEvent) throws IOException {
         setUI("RegistrationForm");
+    }
+    public void setData(String userEmail){
+        this.userEmail=userEmail;
     }
 }

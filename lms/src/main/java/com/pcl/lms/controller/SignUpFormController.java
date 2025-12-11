@@ -1,6 +1,7 @@
 package com.pcl.lms.controller;
 
 import com.pcl.lms.DB.Database;
+import com.pcl.lms.DB.DbConnection;
 import com.pcl.lms.env.StaticResource;
 import com.pcl.lms.model.User;
 import com.pcl.lms.util.security.PasswordManager;
@@ -60,8 +61,7 @@ public class SignUpFormController {
         }
     }
     private boolean signup(User user) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection connection=DriverManager.getConnection("jdbc:mysql://localhost:3306/nextstackMvc","root","1234");
+        Connection connection=DbConnection.getInstance().getConnection();
         String sql="INSERT INTO user VALUES(?,?,?,?)"; //Blind parameters
 
         PreparedStatement ps=connection.prepareStatement(sql);
