@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Optional;
 
@@ -76,34 +77,55 @@ public class StudentManagementFormController {
     }
 
     private void setTableData(String newValue) {
-        ObservableList<StudentTM> studentTM= FXCollections.observableArrayList();
-        for (Student st:Database.studentTable){
-            if (st.getStudentName().contains(newValue)){
-                Button btn=new Button("Delete");
-                StudentTM tm=new StudentTM(
-                        st.getStudentId(),
-                        st.getStudentName(),
-                        st.getStudentAddress(),
-                        new SimpleDateFormat("yyyy-MM-dd").format(st.getDob()),
-                        btn
-                );
-                btn.setOnAction(event->{
-                    Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Are you sure you want to delete ",
-                            ButtonType.YES,ButtonType.NO);
-                    alert.showAndWait();
+        try {
+            ArrayList<Student> studentList =fetchStudentData(searchText);
 
-                    if (alert.getResult()==ButtonType.YES){
-                        Database.studentTable.remove(st);
-                        new Alert(Alert.AlertType.INFORMATION,"Deleted Successfully...").show();
-                        setTableData(searchText);
-                        setStudentId();
-                    }
-                });
-                studentTM.add(tm);
+            ObservableList<StudentTM> studentTM= FXCollections.observableArrayList();
+            for (Student st:studentList){
+
+                    Button btn=new Button("Delete");
+                    StudentTM tm=new StudentTM(
+                            st.getStudentId(),
+                            st.getStudentName(),
+                            st.getStudentAddress(),
+                            new SimpleDateFormat("yyyy-MM-dd").format(st.getDob()),
+                            btn
+                    );
+                    btn.setOnAction(event->{
+                        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Are you sure you want to delete ",
+                                ButtonType.YES,ButtonType.NO);
+                        alert.showAndWait();
+
+                        if (alert.getResult()==ButtonType.YES){
+                            Database.studentTable.remove(st);
+                            new Alert(Alert.AlertType.INFORMATION,"Deleted Successfully...").show();
+                            setTableData(searchText);
+                            setStudentId();
+                        }
+                    });
+                    studentTM.add(tm);
+                
+
             }
-
+            tblStudent.setItems(studentTM);
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
         }
-        tblStudent.setItems(studentTM);
+
+    }
+
+    private ArrayList<Student> fetchStudentData(String searchText) throws SQLException, ClassNotFoundException {
+        ArrayList<Student> studentList=new ArrayList<>();
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("SELECT * FROM student WHERE name LIKE ?");
+        ps.setString(1,"%"+searchText+"%");
+        ResultSet set=ps.executeQuery();
+
+        while (set.next()){
+            studentList.add(new Student(set.getString(1),set.getString(2),
+                    set.getString(3),set.getDate(4)));
+        }
+        return studentList;
     }
 
     public void saveOnAction(ActionEvent actionEvent) {
