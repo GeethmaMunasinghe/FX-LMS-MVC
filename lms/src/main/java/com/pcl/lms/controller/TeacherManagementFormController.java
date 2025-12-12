@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class TeacherManagementFormController {
@@ -68,34 +69,68 @@ public class TeacherManagementFormController {
     }
 
     private void setTeacherData(String searchText) {
-        //load the data into the table
-        ObservableList<TeacherTM>teacherObList= FXCollections.observableArrayList();
-        for (Teacher teacher:Database.teacherTable){
-            if (teacher.getId().toLowerCase().contains(searchText.toLowerCase())){
-                Button btn=new Button("Delete");
-                TeacherTM teacherTM=new TeacherTM(
-                        teacher.getId(),
-                        teacher.getName(),
-                        teacher.getAddress(),
-                        teacher.getContact(),
-                        btn
-                );
-                btn.setOnAction((event)->{
-                    Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Are you sure you want to delete?",ButtonType.YES,
-                            ButtonType.NO);
-                    alert.showAndWait();
-                    if (alert.getResult()==ButtonType.YES){
-                        Database.teacherTable.remove(teacher);
-                        setTeacherData(searchText);
-                        setTeacherId();
-                        new Alert(Alert.AlertType.INFORMATION,"Deleted Successfully").show();
-                    }
-                });
-                teacherObList.add(teacherTM);
-            }
+        try {
+            ArrayList<Teacher> teachers =fetchTeachers(searchText);
+            //load the data into the table
+            ObservableList<TeacherTM>teacherObList= FXCollections.observableArrayList();
+            for (Teacher teacher:teachers){
 
+                    Button btn=new Button("Delete");
+                    TeacherTM teacherTM=new TeacherTM(
+                            teacher.getId(),
+                            teacher.getName(),
+                            teacher.getAddress(),
+                            teacher.getContact(),
+                            btn
+                    );
+                    btn.setOnAction((event)->{
+                        Alert alert=new Alert(Alert.AlertType.CONFIRMATION,"Are you sure you want to delete?",
+                                ButtonType.YES, ButtonType.NO);
+                        alert.showAndWait();
+                        if (alert.getResult()==ButtonType.YES){
+                            try{
+                                boolean isDeleted=deleteTeacher(teacher.getId());
+                                if (isDeleted){
+                                    setTeacherData(searchText);
+                                    setTeacherId();
+
+                                    return;
+                                }
+                                new Alert(Alert.AlertType.WARNING,"Something went wrong").show();
+
+                            }catch (SQLException|ClassNotFoundException e){
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                    teacherObList.add(teacherTM);
+
+            }
+            tblTeacher.setItems(teacherObList);
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
         }
-        tblTeacher.setItems(teacherObList);
+    }
+
+    private boolean deleteTeacher(String id) throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("DELETE FROM teacher WHERE id=?");
+        ps.setString(1,id);
+        return ps.executeUpdate()>0;
+    }
+
+    private ArrayList<Teacher> fetchTeachers(String searchText) throws SQLException, ClassNotFoundException {
+        ArrayList<Teacher> teachers=new ArrayList<>();
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("SELECT * FROM teacher WHERE name LIKE ?");
+        ps.setString(1,"%"+searchText+"%");
+        ResultSet set=ps.executeQuery();
+        while (set.next()){
+            teachers.add(new Teacher(set.getString(1),set.getString(2),
+                    set.getString(3), set.getString(4)));
+        }
+        return teachers;
     }
 
     private void setTeacherId() {
