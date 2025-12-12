@@ -1,6 +1,7 @@
 package com.pcl.lms.controller;
 
 import com.pcl.lms.DB.Database;
+import com.pcl.lms.DB.DbConnection;
 import com.pcl.lms.model.Modules;
 import com.pcl.lms.model.Programme;
 import com.pcl.lms.model.Teacher;
@@ -17,6 +18,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -135,20 +140,34 @@ public class ProgramManagementFormController {
     }
 
     private void setProgrammeId() {
-
-        if (!Database.programmeTable.isEmpty()){
-            //generate id
-            Programme programme =Database.programmeTable.get(Database.programmeTable.size()-1);
-            String programmeId=programme.getProgrammeId();
-            String[] splittedId=programmeId.split("-");
-            String splittedLastCharacterAsString=splittedId[1];
-            int lastDigit=Integer.parseInt(splittedLastCharacterAsString);
-            lastDigit++;
-            String generatedId="P-"+lastDigit;
-            txtProgramId.setText(generatedId);
-        }else {
-            txtProgramId.setText("P-1");
+        try {
+            String lastProgramIdAsString=getLastProgramId();
+            if (lastProgramIdAsString!=null){
+                //generate id
+                String[] splittedId=lastProgramIdAsString.split("-");
+                String splittedLastCharacterAsString=splittedId[1];
+                int lastDigit=Integer.parseInt(splittedLastCharacterAsString);
+                lastDigit++;
+                String generatedId="P-"+lastDigit;
+                txtProgramId.setText(generatedId);
+            }else {
+                txtProgramId.setText("P-1");
+            }
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
         }
+
+    }
+
+    private String getLastProgramId() throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement(
+                "SELECT id FROM program ORDER BY CAST(SUBSTRING(id,3)AS UNSIGNED)DESC LIMIT 1");
+        ResultSet set=ps.executeQuery();
+        if (set.next()){
+            return set.getString("id");
+        }
+        return null;
     }
 
     public void newProgramOnAction(ActionEvent actionEvent) {
