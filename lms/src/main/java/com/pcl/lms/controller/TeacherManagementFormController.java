@@ -183,27 +183,31 @@ public class TeacherManagementFormController {
                 }
 
             }else {
-                //Update functionality
-                Optional<Teacher> selectedTeacher =Database.teacherTable.stream().filter(e->e.getId().
-                        equals(teacher.getId())).findFirst();
-                if (!selectedTeacher.isPresent()){
-                    new Alert(Alert.AlertType.INFORMATION,"Teacher not found").show();
-                    return;
+                boolean isUpdated=updateTeacher(teacher);
+                if (isUpdated){
+                    //Update functionality
+                    setTeacherData(searchText);
+                    clearFields();
+                    setTeacherId();
+                    btnSave.setText("Save");
+                    new Alert(Alert.AlertType.INFORMATION,"Teacher Updated").show();
                 }
-                selectedTeacher.get().setName(teacher.getName());
-                selectedTeacher.get().setAddress(teacher.getAddress());
-                selectedTeacher.get().setContact(teacher.getContact());
-                setTeacherData(searchText);
-                setTeacherId();
-                clearFields();
-                setTeacherId();
-                btnSave.setText("Save");
-                new Alert(Alert.AlertType.INFORMATION,"Teacher Updated").show();
             }
         }catch (SQLException|ClassNotFoundException e){
             e.printStackTrace();
         }
 
+    }
+
+    private boolean updateTeacher(Teacher teacher) throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement(
+                "UPDATE teacher SET name=?,contact=?,address=? WHERE id=?");
+        ps.setString(1,teacher.getName());
+        ps.setString(2,teacher.getContact());
+        ps.setString(3,teacher.getAddress());
+        ps.setString(4,teacher.getId());
+        return ps.executeUpdate()>0;
     }
 
     private boolean saveTeacher(Teacher teacher) throws SQLException, ClassNotFoundException {
