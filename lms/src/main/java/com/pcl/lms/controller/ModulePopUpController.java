@@ -1,5 +1,6 @@
 package com.pcl.lms.controller;
 
+import com.pcl.lms.DB.DbConnection;
 import com.pcl.lms.model.Modules;
 import com.pcl.lms.tm.ModulesTM;
 import javafx.collections.FXCollections;
@@ -7,20 +8,42 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.AnchorPane;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class ModulePopUpController {
 
     public AnchorPane context;
     public ListView<String> lstModule;
     ObservableList<String> moduleObList= FXCollections.observableArrayList();
+    private String programId;
 
     public void initialize(){
-        setModuleList();
+        setModuleList(programId);
+    }
+    public void setData(String programmeId){
+        this.programId=programmeId;
     }
 
-    private void setModuleList() {
-        for (ModulesTM tempMod:ProgramManagementFormController.list){
-            moduleObList.add(tempMod.getId()+" : "+tempMod.getName());
+    private void setModuleList(String programId) {
+        try {
+            ObservableList<String> moduleObList=fetchModules(programId);
+            lstModule.setItems(moduleObList);
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
         }
-        lstModule.setItems(moduleObList);
+
+    }
+
+    private ObservableList<String> fetchModules(String programId) throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("SELECT * FROM module_has_program WHERE program_id=?");
+        ps.setString(1,programId);
+        ResultSet set=ps.executeQuery();
+        while (set.next()){
+            moduleObList.add(set.getString(1));
+        }return moduleObList;
     }
 }

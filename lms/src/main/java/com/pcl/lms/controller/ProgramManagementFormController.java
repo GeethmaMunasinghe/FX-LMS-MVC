@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -112,6 +113,20 @@ public class ProgramManagementFormController {
                      set.getDouble(3),
                       btnDelete
             ));
+            btnModule.setOnAction((event->{
+                try {
+                    FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/pcl/lms/ModulePopUp.fxml"));
+                    Parent load =loader.load();
+                    ModulePopUpController controller=loader.getController();
+                    controller.setData(set.getString(1));
+                    Stage stage=new Stage();
+                    stage.setScene(new Scene(load));
+                    stage.setTitle("Module List");
+                    stage.show();
+                }catch (Exception e){
+                    throw new RuntimeException(e);
+                }
+            }));
         }return programObList;
     }
 
