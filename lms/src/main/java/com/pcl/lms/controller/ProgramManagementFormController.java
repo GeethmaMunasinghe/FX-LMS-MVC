@@ -47,6 +47,7 @@ public class ProgramManagementFormController {
     ArrayList<Modules> modList=new ArrayList<>();
     static ObservableList<ModulesTM> list=FXCollections.observableArrayList();
     private String searchText="";
+    public static String programIdForModules;
 
     public void initialize(){
         colModuleId.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -99,10 +100,14 @@ public class ProgramManagementFormController {
     private ObservableList<ProgrammeTm> fetchProgramDetails(String searchText) throws SQLException, ClassNotFoundException {
         ObservableList<ProgrammeTm> programObList=FXCollections.observableArrayList();
         Connection connection=DbConnection.getInstance().getConnection();
-        PreparedStatement ps=connection.prepareStatement("SELECT p.id,p.name,p.cost,t.name,t.id FROM program p INNER JOIN teacher t ON t.id=p.teacher_id WHERE p.name LIKE ?");
+
+        PreparedStatement ps=connection.prepareStatement(
+                "SELECT p.id,p.name,p.cost,t.name,t.id FROM program p INNER JOIN teacher t ON t.id=p.teacher_id WHERE p.name LIKE ?");
         ps.setString(1,"%"+searchText+"%");
         ResultSet set=ps.executeQuery();
+        String programmeId="";
         while (set.next()){
+            programmeId=set.getString(1);
             Button btnModule=new Button("Module");
             Button btnDelete=new Button("Delete");
             programObList.add(new ProgrammeTm(
@@ -113,12 +118,13 @@ public class ProgramManagementFormController {
                      set.getDouble(3),
                       btnDelete
             ));
+            programIdForModules=programmeId;
             btnModule.setOnAction((event->{
                 try {
                     FXMLLoader loader=new FXMLLoader(getClass().getResource("/com/pcl/lms/ModulePopUp.fxml"));
                     Parent load =loader.load();
                     ModulePopUpController controller=loader.getController();
-                    controller.setData(set.getString(1));
+
                     Stage stage=new Stage();
                     stage.setScene(new Scene(load));
                     stage.setTitle("Module List");
