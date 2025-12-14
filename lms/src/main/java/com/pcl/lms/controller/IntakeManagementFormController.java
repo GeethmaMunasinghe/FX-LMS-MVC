@@ -152,39 +152,59 @@ public class IntakeManagementFormController {
     }
 
     public void saveOnAction(ActionEvent actionEvent) {
-        if (btnSave.getText().equals("Save")){
-            //save
-            Database.intakeTable.add(new Intake
-                    (txtId.getText(),
-                            Date.from(dteStart.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()),
-                            txtName.getText(),
-                            cbxProgram.getValue()
-            ));
-            new Alert(Alert.AlertType.INFORMATION,"Saved").show();
-            setIntakeID();
-            setProgramsData();
-            clearFields();
-            loadTableData(searchText);
-            txtSearch.textProperty().addListener((observable,oldValue,newValue)->{
-                this.searchText=newValue;
-                loadTableData(searchText);
-            });
-        }else {
-            Optional<Intake> selectedIntake =Database.intakeTable.stream().filter(e->e.getId()
-                    .equals(txtId.getText())).findFirst();
-            if (selectedIntake.isPresent()){
-                selectedIntake.get().setName(txtName.getText());
-                selectedIntake.get().setDate(Date.from(dteStart.getValue()
-                        .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                selectedIntake.get().setProgram(cbxProgram.getValue());
-                new Alert(Alert.AlertType.INFORMATION,"Update"+selectedIntake.get().getId()).show();
+        Intake intake=new Intake(
+                txtId.getText(),
+                Date.from(dteStart.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                txtName.getText(),
+                cbxProgram.getValue()
+        );
+        try {
+            if (btnSave.getText().equals("Save")){
+                //save
+                boolean isSaved=saveIntake(intake);
+                new Alert(Alert.AlertType.INFORMATION,"Saved").show();
+                setIntakeID();
+                setProgramsData();
                 clearFields();
                 loadTableData(searchText);
-                setIntakeID();
-                btnSave.setText("Save");
+                txtSearch.textProperty().addListener((observable,oldValue,newValue)->{
+                    this.searchText=newValue;
+                    loadTableData(searchText);
+                });
+            }else {
+                Optional<Intake> selectedIntake =Database.intakeTable.stream().filter(e->e.getId()
+                        .equals(txtId.getText())).findFirst();
+                if (selectedIntake.isPresent()){
+                    selectedIntake.get().setName(txtName.getText());
+                    selectedIntake.get().setDate(Date.from(dteStart.getValue()
+                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                    selectedIntake.get().setProgram(cbxProgram.getValue());
+                    new Alert(Alert.AlertType.INFORMATION,"Update"+selectedIntake.get().getId()).show();
+                    clearFields();
+                    loadTableData(searchText);
+                    setIntakeID();
+                    btnSave.setText("Save");
+                }
             }
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
         }
 
+    }
+
+    private boolean saveIntake(Intake intake) throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("INSERT INTO intake VALUES(?,?,?,?)");
+        ps.setString(1,intake.getId());
+        ps.setString(2,intake.getName());
+        ps.setObject(3,intake.getDate());
+        ps.setString(4,splitId(intake.getProgram()));
+        return ps.executeUpdate()>0;
+    }
+
+    private String splitId(String value) {
+        String[] split=value.split("-");
+        return split[0].trim()+"-"+split[1].trim();
     }
 
     private void clearFields() {
