@@ -264,13 +264,16 @@ public class ProgramManagementFormController {
                 new Alert(Alert.AlertType.INFORMATION,"Programme saved").show();
             }else {
                 //update
-                Optional<Programme> selectedProgram =Database.programmeTable.stream().filter(e->e.getProgrammeId().
-                        equals(txtProgramId.getText())).findFirst();
-                if (selectedProgram.isPresent()){
-                    selectedProgram.get().setProgrammeName(txtProgramName.getText());
-                    selectedProgram.get().setCost(Double.parseDouble(txtCost.getText()));
-                    selectedProgram.get().setTeacher(cbxTeacher.getValue());
-                    selectedProgram.get().setModule(selectedModules);
+                boolean isUpdated=updateProgram(new Programme(
+                        txtProgramId.getText(),
+                        txtProgramName.getText(),
+                        Double.parseDouble(txtCost.getText()),
+                        splitId(cbxTeacher.getValue()),
+                        selectedModules
+                ));
+
+                if (isUpdated){
+
                     new Alert(Alert.AlertType.INFORMATION,"Program updated..."+txtProgramId.getText()).show();
                     loadProgrammeData(searchText);
                     clearFields();
@@ -281,6 +284,16 @@ public class ProgramManagementFormController {
             e.printStackTrace();
         }
 
+    }
+
+    private boolean updateProgram(Programme programme) throws SQLException, ClassNotFoundException {
+       Connection connection=DbConnection.getInstance().getConnection();
+       PreparedStatement ps=connection.prepareStatement("UPDATE program SET name=?,cost=?,teacher_id=? WHERE id=?");
+       ps.setString(1,programme.getProgrammeName());
+       ps.setDouble(2,programme.getCost());
+       ps.setString(3,splitId(programme.getTeacher()));
+       ps.setString(4,programme.getProgrammeId());
+       return ps.executeUpdate()>0;
     }
 
     private String splitId(String value) {
