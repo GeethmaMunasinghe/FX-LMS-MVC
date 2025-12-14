@@ -86,17 +86,31 @@ public class IntakeManagementFormController {
                         Alert delAlert=new Alert(Alert.AlertType.CONFIRMATION,"Are you sure?",ButtonType.YES,ButtonType.NO);
                         delAlert.showAndWait();
                         if (delAlert.getResult()==ButtonType.YES){
-                            Database.intakeTable.remove(intake);
-                            loadTableData(searchText);
-                            setIntakeID();
+                            try {
+                                deleteIntake(intake);
+                                loadTableData(searchText);
+                                setIntakeID();
+                            } catch (SQLException e) {
+                                throw new RuntimeException(e);
+                            } catch (ClassNotFoundException e) {
+                                throw new RuntimeException(e);
+                            }
+
                         }
                     });
-                
+
             }
             tblIntake.setItems(intakeObList);
         }catch (SQLException|ClassNotFoundException e){
             e.printStackTrace();
         }
+    }
+
+    private boolean deleteIntake(Intake intake) throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("DELETE FROM intake WHERE id=?");
+        ps.setString(1,intake.getId().trim());
+        return ps.executeUpdate()>0;
     }
 
     private ObservableList<Intake> fetchIntakeData(String searchText) throws SQLException, ClassNotFoundException {
