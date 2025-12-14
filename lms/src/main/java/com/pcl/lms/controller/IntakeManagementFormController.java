@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Optional;
@@ -62,7 +63,7 @@ public class IntakeManagementFormController {
     private void setDataToForm(IntakeTm tm) {
         txtId.setText(tm.getId());
         txtName.setText(tm.getName());
-        dteStart.setValue(tm.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        dteStart.setValue(LocalDate.parse(tm.getDate().toString()));
         cbxProgram.setValue(tm.getProgram());
         btnSave.setText("Update");
     }
@@ -209,14 +210,9 @@ public class IntakeManagementFormController {
                     loadTableData(searchText);
                 });
             }else {
-                Optional<Intake> selectedIntake =Database.intakeTable.stream().filter(e->e.getId()
-                        .equals(txtId.getText())).findFirst();
-                if (selectedIntake.isPresent()){
-                    selectedIntake.get().setName(txtName.getText());
-                    selectedIntake.get().setDate(Date.from(dteStart.getValue()
-                            .atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                    selectedIntake.get().setProgram(cbxProgram.getValue());
-                    new Alert(Alert.AlertType.INFORMATION,"Update"+selectedIntake.get().getId()).show();
+                boolean isUpdated=updateIntake(intake);
+                if (isUpdated){
+                    new Alert(Alert.AlertType.INFORMATION,"Update"+intake.getId()).show();
                     clearFields();
                     loadTableData(searchText);
                     setIntakeID();
@@ -227,6 +223,17 @@ public class IntakeManagementFormController {
             e.printStackTrace();
         }
 
+    }
+
+    private boolean updateIntake(Intake intake) throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("UPDATE intake SET name=?,date=?,program_id=? WHERE id=?");
+        ps.setString(1,intake.getName());
+        ps.setObject(2,intake.getDate());
+        ps.setString(3,splitId(intake.getProgram()));
+        ps.setString(4,intake.getId());
+
+        return ps.executeUpdate()>0;
     }
 
     private boolean saveIntake(Intake intake) throws SQLException, ClassNotFoundException {
