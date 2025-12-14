@@ -84,16 +84,29 @@ public class RegistrationFormController {
     }
 
     private void setProgramData() {
-        ObservableList<String> programObList= FXCollections.observableArrayList();
-        programObList.clear();
-        if (!Database.programmeTable.isEmpty()){
-            for (Programme programme:Database.programmeTable){
-                programObList.add(programme.getProgrammeId()+"-"+programme.getProgrammeName());
+        try {
+            ObservableList<String> programObList= fetchPrograms();
+            if (!programObList.isEmpty()){
+                cmbProgram.setItems(programObList);
             }
-            cmbProgram.setItems(programObList);
-        }else {
-            cmbProgram.setValue("Programs not found!");
+            else {
+                cmbProgram.setValue("Programs not found!");
+            }
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
         }
+
+    }
+
+    private ObservableList<String> fetchPrograms() throws SQLException, ClassNotFoundException {
+        ObservableList<String> programObList=FXCollections.observableArrayList();
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("SELECT * FROM program");
+        ResultSet set=ps.executeQuery();
+        while (set.next()){
+            programObList.add(set.getString(1).trim()+"-"+set.getString(2).trim());
+        }
+        return programObList;
     }
 
     public void newRegistrationOnAction(ActionEvent actionEvent) {
@@ -104,13 +117,36 @@ public class RegistrationFormController {
     }
 
     public void saveOnAction(ActionEvent actionEvent) {
-        Database.enrollTable.add(new Enroll(
-                cmbStudent.getValue(),
-                cmbProgram.getValue(),
-                rbtnPaid.isSelected()
-        ));
-        new Alert(Alert.AlertType.INFORMATION,"Success").show();
+        try {
+            boolean isSaved=saveEnrollment(new Enroll(
+                    cmbStudent.getValue(),
+                    cmbProgram.getValue(),
+                    rbtnPaid.isSelected()
+            ));
+            if (isSaved){
+                new Alert(Alert.AlertType.INFORMATION,"Success").show();
+            }
+        }catch (SQLException|ClassNotFoundException e){
+            e.printStackTrace();
+        }
+
     }
+
+    private boolean saveEnrollment(Enroll enroll) throws SQLException, ClassNotFoundException {
+        Connection connection=DbConnection.getInstance().getConnection();
+        PreparedStatement ps=connection.prepareStatement("INSERT INTO enroll VALUES (?,?,?)");
+        ps.setString(1,spliteID(enroll.getProgram()));
+        ps.setString(2,spliteID(enroll.getStudent()));
+        ps.setBoolean(3,enroll.isPaid());
+
+        return ps.executeUpdate()>0;
+    }
+
+    private String spliteID(String program) {
+        String[] split=program.split("-");
+        return split[0]+"-"+split[1];
+    }
+
     private void setUI(String location) throws IOException {
         Stage stage=(Stage) context.getScene().getWindow();
         stage.setScene(new Scene((FXMLLoader.load(getClass().getResource("/com/pcl/lms/"+location+".fxml")))));
