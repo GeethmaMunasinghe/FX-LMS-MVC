@@ -100,6 +100,7 @@ Below are screenshots showcasing key functionalities and user interfaces of the 
 ### 🔐 Authentication
 
 * Login Screen
+  
   <img width="627" height="537" alt="image" src="https://github.com/user-attachments/assets/695570f1-1fb9-4928-9367-fe0259651357" />
   
 * Signup / Registration Screen
