@@ -103,26 +103,31 @@ Below are screenshots showcasing key functionalities and user interfaces of the 
   
   <img width="627" height="537" alt="image" src="https://github.com/user-attachments/assets/695570f1-1fb9-4928-9367-fe0259651357" />
   
-* Signup / Registration Screen
+* Signup Screen
+  
   <img width="597" height="547" alt="image" src="https://github.com/user-attachments/assets/a55b0745-dae5-4605-b3c2-dfaede9963c7" />
 
 ### 👨‍🎓 Student Management
 
 * Student Management Dashboard
+  
  <img width="753" height="541" alt="image" src="https://github.com/user-attachments/assets/e2f6ca1e-9d38-4218-874a-cb1ea254942b" />
 
 ### 👩‍🏫 Teacher Management
 
 * Teacher Management Interface
+  
   <img width="752" height="540" alt="image" src="https://github.com/user-attachments/assets/b5b9baad-8b56-4460-a92c-03fdee0b6961" />
 
 ### 📚 Program Management
 
 * Program Creation and Listing
+  
 <img width="766" height="822" alt="image" src="https://github.com/user-attachments/assets/099e98b6-70d9-4550-8c17-41fd30af133b" />
 
 ### 🗂️ Intake Management
 
 * Intake Creation and Assignment
+  
  <img width="770" height="537" alt="image" src="https://github.com/user-attachments/assets/d2d2ade2-51ce-4ec6-85ef-f3dcc41102f9" />
 
